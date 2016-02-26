@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Insert title here</title>
+</head>
+<body>
+This is main page!
+<br>
+<form action='register' method='post'>
+
+<% for(var i = 0; i < data.length; i++){ %>
+<input type="text" name="id" value="<%= data[i].usr_id %>"/><br/>
+<input type="text" name="email" value="<%= data[i].usr_email %>"/><br/>
+<input type="text" name="name" value="<%= data[i].usr_name %>"/>
+<% } %>
+
+<input type="submit" value="Team Register" />
+</form>
+
+<br/>
+<p>My Team</p>
+<% for(var i = 0; i < data2.length; i++){ %>
+<input type='text' value='<%=data2[0].team_name%>'/><br/>
+<input type='text' value='<%=data2[0].team_due%>'/><br/>
+<% } %>
+
+<p>Another Team</p>
+<% for(var i = 0; i < data3.length; i++){ %>
+<input type='text' value='<%=data3[0].team_name%>'/><br/>
+<input type='text' value='<%=data3[0].team_due%>'/><br/>
+<% } %>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<title>Insert title here</title>
+</head>
+<body>
+
+	<div class="container">
+
+		<h2 align="center">주차장 관리 프로그램</h2>
+		<table class="table table-hover">
+			<thead>			
+				<tr align="right">
+					<th width="900"></th>
+					<th align="right"><input type="text" maxlength="4" value="" name="car_no" /></th>
+					<th align="right"><input type="button" value="검색" onclick="search()"></th>
+				</tr>
+			</thead>
+		</table>
+
+		<br />
+		
+		<h1>현재시간 : <span id="time"></span></h1>
+		
+		<br/>
+
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<td>차번호</td>
+					<td>입차시간</td>
+					<td>출차시간</td>
+					<td>요금</td>
+				</tr>
+			</thead>
+
+			<tbody id="app">
+				
+			</tbody>
+
+		</table>
+		
+		<br/>
+		
+		<table class="table table-hover">
+			<thead>			
+				<tr align="right">
+					<th width="900"></th>
+					<th align="right"><input type="text" maxlength="4" value="" id="icar_no" /></th>
+					<th align="right"><input type="button" value="차량등록" onclick="insert()"></th>
+				</tr>
+			</thead>
+		</table>
+		
+	</div>
+
+</body>
+
+<script type="text/javascript">
+
+	var today = new Date(); // 날자 변수 선언
+	var dateNow = today.getDate(); // 로컬 컴퓨터의 일(day)을 구함
+	var monthNow = today.getMonth(); // 로컬 컴퓨터의 월(month)을 구함
+	var yearNow = today.getYear(); // 로컬 컴퓨터의 년(year)을 구함
+	
+	var clockActive = 1;
+	var timerID = 0;
+	var alternate = 0
+	var timerID2 = 0;
+	
+	
+	
+	function select(){
+		$.post("/select_park", {
+    		dummy:new Date().getTime()
+    	}, function(data, status) {
+    		var output;
+    		for(var i = 0; i < data.length; i++){
+    			output = "<tr onclick='detail(this)'>";
+        		output += "<td id=car_no>"+ data[i].car_no +"</td>";
+        		output += "<td id=in_time>"+ data[i].in_time +"</td>";
+        		output += "<td id=out_time>"+ data[i].out_time +"</td>";
+        		output += "<td id=pay>"+ data[i].pay +"</td>";
+        		output += "</tr>";
+        		$(output).appendTo('#app');
+    		}
+    		
+    	});
+	}
+
+	function insert(){
+		var car_no = $("#icar_no").val();
+		$.post("/insert_park", {
+			car:car_no,
+    		dummy:new Date().getTime()
+    	}, function(data, status) {
+    		//alert(data);
+    		//curPcTime();
+    		var output = "<tr>";
+    		output += "<td id=car_no>"+ data[0].car_no +"</td>";
+    		output += "<td id=in_time>"+ data[0].in_time +"</td>";
+    		output += "<td id=out_time></td>";
+    		output += "<td id=pay></td>";
+    		output += "</tr>";
+    		$(output).appendTo('#app');
+    	});
+	}
+	
+	function detail(x){
+		var $this = $(x);
+		alert($this.find('td').length);
+		alert($this.find('td:eq(0)').text());
+		//alert($this.filter('#car_no').val());
+		
+	}
+
+	
+
+	function curPcTime() {
+		var dataTime = new Date();
+		var y = dataTime.getFullYear(); // 년도 가져오기
+		var m = dataTime.getMonth() + 1; // 월 가져오기 (+1)
+		var d = dataTime.getDate(); // 날짜 가져오기
+		var h = dataTime.getHours(); // 시간 가져오기
+		var i = dataTime.getMinutes(); // 분 가져오기
+		var s = dataTime.getSeconds(); // 초 가져오기
+
+		if (m < 10)
+			m = "0" + m;
+		if (d < 10)
+			d = "0" + d;
+		if (h < 10)
+			h = "0" + h;
+		if (i < 10)
+			i = "0" + i;
+		if (s < 10)
+			s = "0" + s;
+
+		
+
+		alternate = (alternate == 0) ? 1 : 0;
+		
+		if (alternate == 0) {
+			$("#time").html( y + "." + m + "." + d + " " + h + ":" + i);
+			//time = y + "." + m + "." + d + " " + h + ":" + i;
+		} else {
+			$("#time").html(y + "." + m + "." + d + " " + h + ":" + i);
+			//time = y + "." + m + "." + d + " " + h + ":" + i;
+		}
+		timerID2 = setTimeout("curPcTime()", 6000);
+	}
+	
+	curPcTime();
+	select();
+</script>
+
+</html>

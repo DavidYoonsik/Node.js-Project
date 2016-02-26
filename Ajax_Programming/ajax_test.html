@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+	$(document).ready(function() {
+		$("button").click(function() {
+			$.post("/ajax_cookie", {
+				name : ["ABA", "ABCCBA", "AFDFF"],
+				city : "Duckburg"
+			}, function(data, status) {
+				//alert("Data: " + data + "\nStatus: " + status);
+				$.each(data, function(i, field){
+	                $("#div2").append("<h2>" + field.id + " " + i + "</h2>");
+	                $("#div2").append("<h2>" + field.name + " " + i + "</h2>");
+	                $("#div2").append("<h2>" + field.modelnumber + " " + i + "</h2>");
+	            });
+			});
+		});
+	});
+</script>
+</head>
+<body>
+
+	<div id="div1">
+		<h2>Let jQuery AJAX Change This Text</h2>
+	</div>
+		
+	<div id="div2">
+		
+	<div id="upload_part">
+		<form method="post" enctype="multipart/form-data">
+			<table>
+	            <tr>
+	                <td>Comment: </td>
+	                <td><input type="text" name="comment" /></td>
+	            </tr>
+	            <tr>
+	                <td>File: </td>
+	                <td><input type="file" name="image" /></td>
+	            </tr>
+	        </table>
+	        <input type="submit" />
+			
+		</form>
+	</div>
+	
+	<button>Get External Content</button>
+
+</body>
+</html>
