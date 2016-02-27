@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Node.js Programming for Modern Web</title>
+
+	<style type="text/css">
+		.line {
+			overflow: hidden;
+		}
+		
+		.seat {
+			margin: 2px;
+			float: left;
+			width: 30px;
+			height: 30px;
+			border-radius: 3px;
+		}
+		
+		.enable {
+			background: gray;
+		}
+		
+		.enable:hover {
+			background: black;
+		}
+		
+		.disable {
+			background: red;
+		}
+	</style>
+
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://192.168.1.1:30000/socket.io/socket.io.js"></script>
+	<!-- 192.168.1.1:30000 : socket.io server ip & port -->
+<script>
+    
+        // socket event connction
+        var socket = io.connect();
+
+        // .on makes event connection to app.js file's event
+        socket.on('reserve', function (data) {
+            var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+            $target.removeClass('enable');
+            $target.addClass('disable');
+        });
+    </script>
+<!-- init seat position -->
+<script>
+        $(document).ready(function () {
+            var onClickSeat = function () {
+                var x = $(this).attr('data-x');
+                var y = $(this).attr('data-y');
+
+                if (confirm('Are you sure booking this seats?')) {
+                    $(this).off('click');
+                    socket.emit('reserve', {
+                        x: x,
+                        y: y
+                    });
+                } else {
+                    alert('cancel complete');
+                }
+            };
+
+            // Ajax
+            $.getJSON('/seats', { dummy: new Date().getTime() }, function (data) {
+                // create seats
+                $.each(data, function (indexY, line) {
+                    
+                    var $line = $('<div></div>').addClass('line');
+                    $.each(line, function (indexX, seat) {
+                        // <div> create and add it to $output variable
+                        var $output = $('<div></div>', {
+                            'class': 'seat',
+                            'data-x': indexX,
+                            'data-y': indexY
+                        }).appendTo($line);
+
+                        if (seat == 1) {
+                            // if seat is empty
+                            $output.addClass('enable').on('click', onClickSeat);
+                        } else if (seat == 2) {
+                            // click disable
+                            $output.addClass('disable');
+                        }
+                    });
+
+                    // add document
+                    $line.appendTo('body');
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+	<h1>OK</h1>
+</body>
+</html>
