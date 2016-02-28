@@ -52,12 +52,14 @@
             var onClickSeat = function () {
                 var x = $(this).attr('data-x');
                 var y = $(this).attr('data-y');
+                var id = $(this).attr('id');
 
                 if (confirm('Are you sure booking this seats?')) {
                     $(this).off('click');
                     socket.emit('reserve', {
                         x: x,
-                        y: y
+                        y: y,
+                        id: id
                     });
                 } else {
                     alert('cancel complete');
@@ -67,8 +69,11 @@
             // Ajax
             $.getJSON('/seats', { dummy: new Date().getTime() }, function (data) {
                 // create seats
-                $.each(data, function (indexY, line) {
-                    
+                var obj = {};
+                obj = data[0].seat;
+                console.log(obj);
+                /* $.each(data, function (indexY, line) {
+                	
                     var $line = $('<div></div>').addClass('line');
                     $.each(line, function (indexX, seat) {
                         // <div> create and add it to $output variable
@@ -89,7 +94,31 @@
 
                     // add document
                     $line.appendTo('body');
-                });
+                }); */
+                
+                for(var i = 0; i < data.length; i++){
+                	var $line = $('<div></div>').addClass('line');
+                	for(var j = 0; j < data[i].seat.length; j++){
+                		console.log(data[i]._id);
+                		
+                		var $output = $('<div></div>', {
+                            'class': 'seat',
+                            'data-x': j,
+                            'data-y': i,
+                            'id': data[i]._id
+                        }).appendTo($line);
+
+                        if (data[i].seat[j] == 1) {
+                            // if seat is empty
+                            $output.addClass('enable').on('click', onClickSeat);
+                        } else if (data[i].seat[j] == 2) {
+                            // click disable
+                            $output.addClass('disable');
+                        }
+                	}
+                	// add document
+                    $line.appendTo('body');
+                }
             });
         });
     </script>

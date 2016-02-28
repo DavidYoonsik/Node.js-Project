@@ -28,16 +28,18 @@ run.listen(30000, function(error){
 
 var db = mongoclient.db('node'); // What you want to use for database
 
+var x = [];
+
 app.get('/', function(req,res) {
 
 		
-	db.collection('mapreduce').aggregate([
+	/*db.collection('mapreduce').aggregate([
 	                                      {$match:{status:"A"}}, 
 	                                      {$group:{_id:"$cust_id", total:{$sum:"$amount"}}}], 
 	                                      function(err, result){
 		console.log(result);
 		console.log('---' + result.length);
-	});
+	});*/
 
 	// Join using manual reference
 	/*var original_id = new objectId();
@@ -58,16 +60,37 @@ app.get('/', function(req,res) {
 		console.log(result);
 	});*/
 	
-	db.collection('ref_main').find({}, {_id:1}).toArray(function(err, result){
+	/*db.collection('ref_main').find({}, {_id:1}).toArray(function(err, result){
 		for(var i = 0; i < result.length; i++){
 			db.collection('ref_sub').find({sub_id:result[i]._id}).toArray(function(err, result){
 				console.log(result);
 			});
 		}
 		
+	});*/
+	
+	/*for(var i = 0; i < 12; i++){
+		db.collection('movie').save({"seat":[1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1]}, function(err, result){
+			if(!err){
+				console.log('save!');
+			}
+		});
+	}*/	
+	
+	db.collection('movie').find({}, {_id:1, seat:1}).toArray(function(err, result){
+		for(var i = 0; i < result.length; i++){
+			//console.log(result[i].seat);
+			x.push(result[i]);
+		}
+		
+		
 	});
 	
 	
-	res.send('Hello world');
+	res.redirect('/check');
 	
+});
+
+app.get('/check', function(req,res) {
+	console.log(x);
 });
