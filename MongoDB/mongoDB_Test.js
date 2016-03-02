@@ -77,7 +77,13 @@ app.get('/', function(req,res) {
 		});
 	}*/	
 	
-	db.collection('movie').find({}, {_id:1, seat:1}).toArray(function(err, result){
+	db.collection('movie').save({"seat":[1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1]}, function(err, result){
+		if(!err){
+			console.log('save!');
+		}
+	});
+	
+	/*db.collection('movie').find({}, {_id:1, seat:1}).toArray(function(err, result){
 		for(var i = 0; i < result.length; i++){
 			//console.log(result[i].seat);
 			x.push(result[i]);
@@ -87,7 +93,7 @@ app.get('/', function(req,res) {
 	});
 	
 	
-	res.redirect('/check');
+	res.redirect('/check');*/
 	
 });
 

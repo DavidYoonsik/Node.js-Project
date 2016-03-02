@@ -67,6 +67,8 @@ io.sockets.on('connection', function (socket) {
     	var set = {};
     	set['seat.' + y] = 2;
     	
+    	console.log(set);
+    	
     	// Update seat's value 1 to 2 meaning it is booked.
     	db.collection('movie').update({ _id:objectId(x)}, {$set:set}, function(err, result){
     		console.log('Update Succeed!');
