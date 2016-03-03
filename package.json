@@ -14,6 +14,8 @@
     "supervisor":"*",
     "forever":"*",
     "mkdirp":"*",
-    "node-inspector":"*"
+    "node-inspector":"*",
+    "body-parser":"*",
+    "method-override":"*"
   }
 }
