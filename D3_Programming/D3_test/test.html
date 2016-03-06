@@ -3,37 +3,38 @@
 <html>
 <head>
 <title>d3 example</title>
+
 <style>
-body {
-	font: 12px Arial;
-}
-
-path {
-	stroke: steelblue;
-	stroke-width: 2;
-	fill: none;
-}
-
-.axis path, .axis line {
-	fill: none;
-	stroke: grey;
-	stroke-width: 1;
-	shape-rendering: crispEdges;
-}
-
-.grid path {
-	stroke-width: 0;
-}
-
-.tick line {
-	stroke: grey;
-	opacity: 0.7;
-}
-
-.area {
-	fill: lightsteelblue;
-	stroke-width: 0;
-}
+	body {
+		font: 12px Arial;
+	}
+	
+	path {
+		stroke: steelblue;
+		stroke-width: 2;
+		fill: none;
+	}
+	
+	.axis path, .axis line {
+		fill: none;
+		stroke: grey;
+		stroke-width: 1;
+		shape-rendering: crispEdges;
+	}
+	
+	.grid path {
+		stroke-width: 0;
+	}
+	
+	.tick line {
+		stroke: grey;
+		opacity: 0.7;
+	}
+	
+	.area {
+		fill: lightsteelblue;
+		stroke-width: 0;
+	}
 </style>
 
 
@@ -47,9 +48,18 @@ path {
 		<input name="updateButton" type="button" value="update" onclick="updateData()">
 	</div>
 	
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.0/d3.js" charset="utf-8"></script>
+	<script	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="d3.js" charset="utf-8"></script>
 
 	<script src="sub_test.js" charset="utf-8"></script>
+	
+	<script>
+		$.post("/data", function(data) {
+			//alert(data); for test;
+			get_data(data);
+		});
+	</script>
 
 </body>
 </html>

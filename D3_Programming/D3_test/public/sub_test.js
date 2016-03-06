@@ -2,27 +2,25 @@
  * http://usejsdoc.org/
  */
 
-
-
 var data = [
             {date: "01-May-11", close: "58.13"},
-            {date: "30-Apr-11", close: "53.98"},
+            {date: "30-Apr-11", close: "37.98"},
             {date: "27-Apr-11", close: "67.00"},
-            {date: "26-Apr-11", close: "89.70"},
-            {date: "25-Apr-11", close: "60.00"},
-            ];
+            {date: "26-Apr-11", close: "45.70"},
+            {date: "25-Apr-11", close: "60.00"}
+           ];
 
-parseDate = d3.time.format("%d-%b-%y").parse;
-margin = {top: 30, right: 40, bottom: 100, left: 50};
-width = 2000 - margin.left - margin.right;
-height = 800 - margin.top - margin.bottom;
+var parseDate = d3.time.format("%d-%b-%y").parse;
+var margin = {top: 30, right: 40, bottom: 100, left: 50};
+var width = 800 - margin.left - margin.right;
+var height = 400 - margin.top - margin.bottom;
 var xScale = d3.time.scale().range([0, width]);
 var yScale = d3.scale.linear().range([height, 0]);
-var xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(10).tickFormat(d3.time.format("%Y-%m-%d"));
-var yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(10);
+var xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5).tickFormat(d3.time.format("%Y-%m-%d"));
+var yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(20);
 
 var valueLine = d3.svg.line()
-.interpolate("linear")
+.interpolate("basis") // linear, step-before, step-after, basis, cadinal, monotone
 .x(function (d) {
 	return xScale(d.date);
 })
@@ -43,7 +41,7 @@ function make_x_axis() {
 	return d3.svg.axis()
 	.scale(xScale)
 	.orient("bottom")
-	.ticks(10);
+	.ticks(30);
 }
 
 function make_y_axis() {
@@ -54,8 +52,10 @@ function make_y_axis() {
 }
 
 data.forEach(function (d) {
+	//alert('Before : ' + d.date + ', ' + d.close);
 	d.date = parseDate(d.date);
 	d.close = +d.close;
+	//alert('After : ' + d.date + ', ' + d.close);
 });
 
 xScale.domain(d3.extent(data,
@@ -105,17 +105,20 @@ svg.append("g")
 		.tickSize(-height, 0, 0)
 		.tickFormat("")
 );
+
 svg.append("g")
 .attr("class", "grid")
 .call(make_y_axis()
 		.tickSize(-width, 0, 0)
 		.tickFormat("")
 );
+
 svg.append("text")
-.attr("x", width / 2)
+.attr("x", width/2)
 .attr("y", height + margin.bottom)
 .style("text-anchor", "middle")
-.text("Date");
+.text("Date Range");
+
 svg.append("text")
 .attr("transform", "rotate(-90)")
 .attr("y", 0 - (margin.left))
@@ -123,22 +126,29 @@ svg.append("text")
 .attr("dy", "1em")
 .style("text-anchor", "middle")
 .text("Value");
+
 svg.append("text")
 .attr("x", (width / 2))
 .attr("y", 0 - (margin.top / 2))
 .attr("text-anchor", "middle")
 .style("font-size", "16px")
 .style("text-decoration", "underline")
-.text("Value vs Date Graph");
+.text("D3.js Test Source by YYS");
+
+var dataAlt = [
+               {date: "01-May-11", close: "58.13"},
+               {date: "30-Apr-11", close: "37.98"},
+               {date: "27-Apr-11", close: "67.00"},
+               {date: "26-Apr-11", close: "45.70"},
+               {date: "25-Apr-11", close: "60.00"}
+              ];
+
+function get_data(d){
+	dataAlt = d;
+}
 
 function updateData() {
-	var dataAlt = [
-	               {date: "01-May-11", close: "58.13"},
-	               {date: "30-Apr-11", close: "37.98"},
-	               {date: "27-Apr-11", close: "67.00"},
-	               {date: "26-Apr-11", close: "45.70"},
-	               {date: "25-Apr-11", close: "60.00"}
-	               ];
+	
 	dataAlt.forEach(function (d) {
 		d.date = parseDate(d.date);
 		d.close = +d.close;
