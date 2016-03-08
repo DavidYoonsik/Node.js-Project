@@ -19,6 +19,62 @@ var yScale = d3.scale.linear().range([height, 0]);
 var xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5).tickFormat(d3.time.format("%Y-%m-%d"));
 var yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(20);
 
+var dataAlt = [
+               {date: "01-May-11", close: "58.13"},
+               {date: "30-Apr-11", close: "37.98"},
+               {date: "27-Apr-11", close: "67.00"},
+               {date: "26-Apr-11", close: "45.70"},
+               {date: "25-Apr-11", close: "60.00"}
+              ];
+
+function updateData() {
+	
+	dataAlt.forEach(function (d) {
+		d.date = parseDate(d.date);
+		d.close = +d.close;
+	});
+	
+	xScale.domain(d3.extent(dataAlt, function (d) {
+		return d.date;
+	}));
+	
+	yScale.domain([0, d3.max(dataAlt, function (d) {
+		return d.close + 10;
+	})]);
+	
+	var svg = d3.select("body").transition();
+	
+	svg.select(".line")
+	.duration(500)
+	.attr("d", valueLine(dataAlt));
+	
+	svg.select(".area")
+	.duration(500)
+	.attr("d", valueArea(dataAlt));
+	
+	svg.select(".x.axis")
+	.duration(500)
+	.call(xAxis)
+	.selectAll("text")
+	.style("text-anchor", "end")
+	.attr("dx", "-0.8em")
+	.attr("dy", "0.15em")
+	.attr("transform", function (d) {
+		return "rotate(-65)";
+	});
+	
+	svg.select(".y.axis")
+	.duration(500)
+	.call(yAxis);
+	
+	svg.select(".grid")
+	.duration(500)
+	.call(make_x_axis()
+			.tickSize(-height, 0, 0)
+			.tickFormat("")
+	);
+}
+
 var valueLine = d3.svg.line()
 .interpolate("basis") // linear, step-before, step-after, basis, cadinal, monotone
 .x(function (d) {
@@ -41,14 +97,14 @@ function make_x_axis() {
 	return d3.svg.axis()
 	.scale(xScale)
 	.orient("bottom")
-	.ticks(30);
+	.ticks(5);
 }
 
 function make_y_axis() {
 	return d3.svg.axis()
 	.scale(yScale)
 	.orient("left")
-	.ticks(10);
+	.ticks(20);
 }
 
 data.forEach(function (d) {
@@ -68,6 +124,8 @@ yScale.domain([0, d3.max(data,
 	return d.close;
 })]);
 
+// D3.js has a function (D3.max) which calculates the maximum value of an array.
+
 var svg = d3.select("body")
 .append("svg")
 .attr("width", width + margin.left + margin.right)
@@ -82,6 +140,8 @@ svg.append("path")
 svg.append("path")
 .attr("class", "line")
 .attr("d", valueLine(data));
+
+// The SVG Group Element is defined by <g> and </g>.
 svg.append("g")
 .attr("class", "x axis")
 .attr("transform", "translate(0, " + height + ")")
@@ -135,54 +195,7 @@ svg.append("text")
 .style("text-decoration", "underline")
 .text("D3.js Test Source by YYS");
 
-var dataAlt = [
-               {date: "01-May-11", close: "58.13"},
-               {date: "30-Apr-11", close: "37.98"},
-               {date: "27-Apr-11", close: "67.00"},
-               {date: "26-Apr-11", close: "45.70"},
-               {date: "25-Apr-11", close: "60.00"}
-              ];
-
 function get_data(d){
 	dataAlt = d;
 }
 
-function updateData() {
-	
-	dataAlt.forEach(function (d) {
-		d.date = parseDate(d.date);
-		d.close = +d.close;
-	});
-	xScale.domain(d3.extent(dataAlt, function (d) {
-		return d.date;
-	}));
-	yScale.domain([0, d3.max(dataAlt, function (d) {
-		return d.close;
-	})]);
-	var svg = d3.select("body").transition();
-	svg.select(".line")
-	.duration(750)
-	.attr("d", valueLine(dataAlt));
-	svg.select(".area")
-	.duration(750)
-	.attr("d", valueArea(dataAlt));
-	svg.select(".x.axis")
-	.duration(750)
-	.call(xAxis)
-	.selectAll("text")
-	.style("text-anchor", "end")
-	.attr("dx", "-.8em")
-	.attr("dy", ".15em")
-	.attr("transform", function (d) {
-		return "rotate(-65)";
-	});
-	svg.select(".y.axis")
-	.duration(750)
-	.call(yAxis);
-	svg.select(".grid")
-	.duration(750)
-	.call(make_x_axis()
-			.tickSize(-height, 0, 0)
-			.tickFormat("")
-	);
-}

@@ -5,36 +5,36 @@
 <title>d3 example</title>
 
 <style>
-	body {
-		font: 12px Arial;
-	}
-	
-	path {
-		stroke: steelblue;
-		stroke-width: 2;
-		fill: none;
-	}
-	
-	.axis path, .axis line {
-		fill: none;
-		stroke: grey;
-		stroke-width: 1;
-		shape-rendering: crispEdges;
-	}
-	
-	.grid path {
-		stroke-width: 0;
-	}
-	
-	.tick line {
-		stroke: grey;
-		opacity: 0.7;
-	}
-	
-	.area {
-		fill: lightsteelblue;
-		stroke-width: 0;
-	}
+body {
+	font: 12px Arial;
+}
+
+path {
+	stroke: steelblue;
+	stroke-width: 2;
+	fill: none;
+}
+
+.axis path, .axis line {
+	fill: none;
+	stroke: grey;
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+}
+
+.grid path {
+	stroke-width: 0;
+}
+
+.tick line {
+	stroke: grey;
+	opacity: 0.7;
+}
+
+.area {
+	fill: lightsteelblue;
+	stroke-width: 0;
+}
 </style>
 
 
@@ -45,21 +45,306 @@
 
 
 	<div>
-		<input name="updateButton" type="button" value="update" onclick="updateData()">
+		<input name="updateButton" type="button" value="update"
+			onclick="updateData()">
 	</div>
-	
-	<script	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
 	<script type="text/javascript" src="d3.js" charset="utf-8"></script>
 
 	<script src="sub_test.js" charset="utf-8"></script>
-	
+
 	<script>
 		$.post("/data", function(data) {
 			//alert(data); for test;
 			get_data(data);
 		});
 	</script>
+	
+	<br/>
+
+	<script>
+		var circleData = [ {
+			"cx" : 20,
+			"cy" : 20,
+			"radius" : 20,
+			"color" : "green"
+		}, {
+			"cx" : 70,
+			"cy" : 70,
+			"radius" : 20,
+			"color" : "purple"
+		} ];
+
+		var rectangleData = [ {
+			"rx" : 110,
+			"ry" : 110,
+			"height" : 30,
+			"width" : 30,
+			"color" : "blue"
+		}, {
+			"rx" : 160,
+			"ry" : 160,
+			"height" : 30,
+			"width" : 30,
+			"color" : "red"
+		} ];
+
+		var svgContainer = d3.select("body").append("svg").attr("width", 200).attr("height", 200);
+
+		//Add a group to hold the circles
+		var circleGroup = svgContainer.append("g").attr("transform", "translate(80,0)");;
+
+		//Add circles to the circleGroup
+		var circles = circleGroup.selectAll("circle").data(circleData).enter().append("circle");
+
+		var circleAttributes = circles.attr("cx", function(d) {
+			return d.cx;
+		}).attr("cy", function(d) {
+			return d.cy;
+		}).attr("r", function(d) {
+			return d.radius;
+		}).style("fill", function(d) {
+			return d.color;
+		});
+
+		// * Note * that the rectangles are added to the svgContainer, not the circleGroup
+		var rectangles = svgContainer.selectAll("rect").data(rectangleData).enter().append("rect");
+
+		var rectangleAttributes = rectangles.attr("x", function(d) {
+			return d.rx;
+		}).attr("y", function(d) {
+			return d.ry;
+		}).attr("height", function(d) {
+			return d.height;
+		}).attr("width", function(d) {
+			return d.width;
+		}).style("fill", function(d) {
+			return d.color;
+		});		
+		
+	</script>
+	
+	<br/>
+	
+	<script>
+	
+		var svgContainer = d3.select('body').append('svg').attr('width', 500).attr('height', 100);
+		var axisScale = d3.scale.linear().domain([0, 100]).range([0, 400]);
+		var xAixs = d3.svg.axis().scale(axisScale);
+		var xAixsG = svgContainer.append('g').call(xAixs);
+	
+	</script>
+
+	<br/>
+
+	<script>
+		// Path Data Generator Function
+		// d3.svg.line();
+
+		var lineData = [ {
+			'x' : 10,
+			'y' : 5
+		}, {
+			'x' : 20,
+			'y' : 100
+		}, {
+			'x' : 40,
+			'y' : 50
+		}, {
+			'x' : 60,
+			'y' : 40
+		}, {
+			'x' : 80,
+			'y' : 5
+		}, {
+			'x' : 100,
+			'y' : 60
+		} ];
+
+		var lineF = d3.svg.line().x(function(d) {
+			return d.x
+		}).y(function(d) {
+			return d.y
+		}).interpolate('linear');
+		var svgContainer = d3.select('body').append('svg').attr('width', 200).attr('height', 200);
+		var lineG = svgContainer.append('path').attr('d', lineF(lineData))
+				.attr('stroke', 'blue').attr('stroke-width', 5).attr('fill', 'red');
+
+		var domainOnlyScale = d3.scale.linear().domain([ 0, 1000 ]).range([ 0, 100 ]);
+		alert(domainOnlyScale(100));
+	</script>
+
+	<br/>
+
+	<script>
+		var width = 200;
+		var height = 200;
+		var spaceCircles = [ 30, 70, 110 ];
+
+		var svgContainer = d3.select("body").append("svg").attr("width", width)
+				.attr("height", height);
+
+		var circles = svgContainer.selectAll("circle").data(spaceCircles)
+				.enter().append("circle");
+
+		var circleAttributes = circles.attr("cx", function(d) {	return d;}).attr("cy", function(d) {return d;}).attr("r", 20)
+		.style("fill", function(d) {	// The necessary SVG attributes for drawing a circle are the "cx", "cy" and "r".
+			var returnColor;
+			if (d === 30) {
+				returnColor = "green";
+			} else if (d === 70) {
+				returnColor = "purple";
+			} else if (d === 110) {
+				returnColor = "red";
+			}
+			return returnColor;
+		});
+	</script>
+
+	<br/>
+
+	<script>
+	
+		// JSON type data-set is used for this script statement.
+	
+		var width = 200;
+		var height = 200;
+	
+		var jsonCircle = [ {
+			"cx" : 30,
+			"cy" : 30,
+			"r" : 20,
+			"color" : "green"
+		}, {
+			"cx" : 70,
+			"cy" : 70,
+			"r" : 20,
+			"color" : "purple"
+		}, {
+			"cx" : 110,
+			"cy" : 100,
+			"r" : 20,
+			"color" : "red"
+		} ];
+
+		var svgContainer = d3.select("body").append("svg").attr("width", width)
+				.attr("height", height);
+
+		var circles = svgContainer.selectAll("circle").data(jsonCircle)
+				.enter().append("circle");
+
+		var circleAttributes = circles.attr("cx", function(d) {
+			return d.cx;
+		}).attr("cy", function(d) {
+			return d.cy;
+		}).attr("r", function(d){
+			return d.r;
+		}).style("fill", function(d) {
+			return d.color;
+		});
+	</script>
+	
+	<br/>
+	
+	<script>
+	
+		
+	
+	</script>
+
+	<br/>
+	
+	<script>
+		var c = [100, 60, 30];
+		var svgContainer = d3.select('body').append('svg').attr('width', 200).attr('height', 200);
+		var circles = svgContainer.selectAll("circle").data(c).enter().append("circle");
+		circles.attr('cx', 100).attr('cy', 100).attr('r', function(d){return d}).style('fill', function(d){
+			// The cx tells us to move 25 units from the left to the right of the SVG element.
+			// The cy tells us to move 25 units from the top to the bottom of the SVG element.
+			if(d >= 100){
+				return 'green';
+			}else if(d >= 60){
+				return 'red';
+			}else{
+				return 'blue';
+			}
+		});
+	</script>
+
+	<!-- svg example
+	<svg width="50" height="50">
+		<rect x='0' y='0' width='50' height='50' fill='green'>
+	</svg>
+
+	<svg width="50" height="50">
+		<circle cx='25' cy='25' r='25' fill='purple'>
+	</svg> -->
+	
+	<br/>
+	
+	<script>
+		var select = d3.select('body');
+		var svgSelect = select.append('svg').attr('width', 100).attr('height', 100);
+		var circleSelect = svgSelect.append('circle').attr('cx', 50).attr('cy', 50).attr('r', 50).style('fill', 'purple');
+		// cx : x position, cy : y posotion, r : radius
+	</script>
+
+	<script>
+		circleRadii = [300, 150, 10];
+		var svgContainer = d3.select("body").append("svg").attr("width", 1000).attr("height", 800);
+		var circles = svgContainer.selectAll("circle").data(circleRadii).enter().append("circle");
+		var circleAttributes = circles.attr("cx", 500)
+		                       .attr("cy", 400)
+		                       .attr("r", function (d) { return d; })
+		                       .style("fill", function(d) {
+		                         var returnColor;
+		                         if (d >= 200) { returnColor = "green";
+		                         } else if (d >= 30) { returnColor = "purple";
+		                         } else if (d >= 10) { returnColor = "red"; }
+		                         return returnColor;
+		                       });
+		
+	</script>
+
+	<script>
+		
+		
+		d3.select("body").append("svg").attr("width", 50).attr("height", 50).append("circle").attr("cx", 25).attr("cy", 25).attr("r", 25).style("fill", "purple");
+	
+		var selection = d3.select('body');
+		var svgSelection = selection.append('svg').attr('width', 50).attr('height', 50);
+		var circleSelection = svgSelection.append('circle').attr('cx', 25).attr('cy', 25).attr('r', 25).style('fill', 'purple');
+		
+		// both things are same function.
+		
+		var theData = [1, 2, 3, 4];
+		
+		
+		
+		var p = d3.select("body")
+		.selectAll("p")
+		.data(theData)
+		.enter()
+		.append("p")
+		//.text(function(d){return d;});
+		.text(function(data, index){
+			return "the data is  : " + data + " and index value is : " + index;
+		})
+		// The virtual enter selection now contains placeholders for our <p> elements. ( d3.select("body").selectAll("p") )
+		// the SelectAll method selects all the elements that match the specific selector string.
+		// append("p") a 'p' element is inserted.
+		
+		// function(d){return d}; If the functionName is missing, then it is called an anonymous function
+		
+		
+		d3.select("body").append("p");
+		// select method uses CSS3 selector to grab DOM elements.
+		
+	</script>
+	
+	
 
 </body>
 </html>
