@@ -9,10 +9,14 @@
 <script>
 //socket event connction
 var socket = io.connect();
-
+var x = true;
 // .on makes event connection to app.js file's event
 socket.on('share', function (data) {
-    //alert(data.data);
+
+	if(x){
+		
+		x = false;
+	}
     
     //$("#cont").text(data.data);
 	$("#cont").val(data.data);
@@ -20,6 +24,7 @@ socket.on('share', function (data) {
 
 function share(x){
 	//alert(x.value);
+	socket.emit('join', $("#ident").val() );
 	socket.emit('share', {
         data : x.value
     });
@@ -30,13 +35,13 @@ function share(x){
 </head>
 
 <body>
-
+<div>
+	<input type="text" id="ident" name="ident" />
+</div>
 <textarea id="cont" onkeyup="share(this)" rows="20" cols="50">
 This data will be stored at MongoDB in future...
 </textarea>
 
 </body>
-
-
 
 </html>

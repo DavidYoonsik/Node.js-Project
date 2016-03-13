@@ -53,7 +53,7 @@ app.post('/data', function(req, res){
 var io = socketio.listen(run);
 io.sockets.on('connection', function (socket) {
 	
-	socket.on('join_server', function(data){
+	socket.on('join', function(data){
 		socket.join(data);
 		socket.name = data;
 		console.log(socket.name);
@@ -63,8 +63,8 @@ io.sockets.on('connection', function (socket) {
     	
     	console.log(data.data);
     	
-        io.sockets.emit('share', data);
-        //io.sockets.in(socket.name).emit('c_share', data);
+        //io.sockets.emit('share', data);
+        io.sockets.in(socket.name).emit('share', data);
     	//socket.broadcast.emit('c_share', data);
     });
 });
