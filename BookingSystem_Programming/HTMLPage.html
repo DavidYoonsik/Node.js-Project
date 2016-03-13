@@ -35,17 +35,17 @@
 	<!-- 192.168.1.1:30000 : socket.io server ip & port -->
 	
 <script>
-    
-        // socket event connction
-        var socket = io.connect();
-
-        // .on makes event connection to app.js file's event
-        socket.on('reserve', function (data) {
-            var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-            $target.removeClass('enable');
-            $target.addClass('disable');
-        });
-    </script>
+	
+	// socket event connction
+	var socket = io.connect();
+	
+	// .on makes event connection to app.js file's event
+	socket.on('reserve', function (data) {
+	    var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+	    $target.removeClass('enable');
+	    $target.addClass('disable');
+	});
+</script>
 <!-- init seat position -->
 <script>
         $(document).ready(function () {

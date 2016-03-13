@@ -35,6 +35,13 @@ app.get('/', function (request, response, next) {
     });
 });
 
+app.get('/ag', function (request, response, next) {
+    fs.readFile('./angular.html', function (error, data) {
+        //response.sendfile('test.html');
+    	response.send(data.toString());
+    });
+});
+
 app.post('/data', function(req, res){
 	db.collection('dateFormat').find({},{_id:0, date:1, close:1}).toArray(function(err, result){    		
 		console.log(result);

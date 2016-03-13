@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="http://192.168.1.1:30000/socket.io/socket.io.js"></script>
+
+<script>
+//socket event connction
+var socket = io.connect();
+
+// .on makes event connection to app.js file's event
+socket.on('share', function (data) {
+    //alert(data.data);
+    
+    //$("#cont").text(data.data);
+	$("#cont").val(data.data);
+});
+
+function share(x){
+	//alert(x.value);
+	socket.emit('share', {
+        data : x.value
+    });
+}
+
+</script>
+
+</head>
+
+<body>
+
+<textarea id="cont" onkeyup="share(this)" rows="20" cols="50">
+This data will be stored at MongoDB in future...
+</textarea>
+
+</body>
+
+
+
+</html>
