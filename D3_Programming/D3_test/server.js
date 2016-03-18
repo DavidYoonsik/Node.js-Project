@@ -30,8 +30,8 @@ var db = db_config.get_db('node');
 var seats = [];
 
 app.get('/', function (request, response, next) {
-    fs.readFile('./test.html', function (error, data) {
-        response.sendfile('test.html');
+    fs.readFile('./baskin.html', function (error, data) {
+        response.sendfile('baskin.html');
     });
 });
 
@@ -47,4 +47,15 @@ app.post('/data', function(req, res){
 		console.log(result);
 		res.json(result);
 	});
+});
+
+//Running socket server
+var io = socketio.listen(run);
+io.sockets.on('connection', function (socket) {
+    socket.on('reserve', function (data) {
+    	var count = 1;
+    	data.count = count++;
+    	console.log(count);
+        io.sockets.emit('reserve', data);
+    });
 });

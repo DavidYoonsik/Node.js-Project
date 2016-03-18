@@ -1,0 +1,208 @@
+<html>
+<head>
+
+<style type="text/css">
+.line {
+	overflow: hidden;
+}
+
+.seat {
+	margin: 2px;
+	float: left;
+	width: 30px;
+	height: 30px;
+	border-radius: 3px;
+}
+
+.enable {
+	background: graytext;
+}
+
+.enable:hover {
+	background: black;
+}
+
+.disable {
+	background: red;
+}
+
+.disables {
+	background: yellow;
+}
+</style>
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://118.223.43.81:30000/socket.io/socket.io.js"></script>
+
+<script>
+	// socket event connction
+	var socket = io.connect();
+	var count_user = 1;
+	var count_computer = 1;
+	// .on makes event connection to app.js file's event
+	socket.on('reserve', function(data) {
+		
+		var onClickSeat = function() {
+			var data = $(this).attr('data-x');
+			var data2 = $(this).attr('data-y');
+			socket.emit('reserve', {
+				x : data,
+				y : data2
+			});
+		}
+
+		var d_x = parseInt(data.x);
+		var d_y = data.y;
+
+		if (data.y == 'user') {
+			if(count_user != 4){
+				count_computer = 1;
+				var $target = $('div[data-x = ' + d_x + '][data-y = ' + d_y + ']');
+				$target.removeClass('enable');
+				$target.addClass('disable');
+				$target.off('click');
+				
+				d_y = 'computer';
+				$target = $('div[data-x = ' + d_x + '][data-y = ' + d_y + ']');
+				$target.off('click');
+				
+				d_x += 1;
+				d_y = 'user';
+				$target = $('div[data-x = ' + d_x + '][data-y = ' + d_y + ']');
+				
+				$target.on('click', onClickSeat);
+				
+				d_y = 'computer';
+				
+				var $target2 = $('div[data-x = ' + d_x + '][data-y = ' + d_y + ']');
+				$target2.on('click', onClickSeat);
+				//$target2.addClass('disable');
+				
+				count_user++;
+			}else{
+				alert('No more chance for user');
+				//count_user = 1;
+				count_computer = 1;
+			}
+			
+			
+		} else {
+			if(count_computer != 4){
+				count_user = 1;
+				var $target = $('div[data-x = ' + d_x + '][data-y = ' + d_y + ']');
+				$target.removeClass('enable');
+				$target.addClass('disables');
+				$target.off('click');
+				
+				d_y = 'user';
+				$target = $('div[data-x = ' + d_x + '][data-y = ' + d_y + ']');
+				$target.off('click');
+				
+				d_x += 1;
+				d_y = 'computer';
+				$target = $('div[data-x = ' + d_x + '][data-y = ' + d_y + ']');
+				
+				$target.on('click', onClickSeat);
+				d_y = 'user';
+				var $target2 = $('div[data-x = ' + d_x + '][data-y = ' + d_y + ']');
+				$target2.on('click', onClickSeat);
+				
+				count_computer++;
+			}else{
+				alert('No more chance for computer');
+				//count_computer = 1;
+				count_user = 1;
+			}
+			
+		}
+
+	});
+</script>
+
+</head>
+<body>
+
+</body>
+
+
+<script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+
+						var x = [];
+
+						for (var i = 1; i < 32; i++) {
+							x.push(i);
+						}
+
+						var count = 3;
+
+						var onClickSeat = function() {
+							var data = $(this).attr('data-x');
+							var data2 = $(this).attr('data-y');
+							socket.emit('reserve', {
+								x : data,
+								y : data2
+							});
+
+							//var data = $(this).attr('data-x');
+							//$(this).addClass('disable');
+							//$(this).off('click');
+							/* if (confirm('Are you sure booking this seats?')) {
+								$(this).off('click');
+								
+							} else {
+								alert('cancel complete');
+							} */
+
+						};
+
+						var $line = $('<div></div>').addClass('line');
+						for (var j = 0; j < x.length; j++) {
+
+							var $output = $("<div></div>", {
+								'class' : 'seat',
+								'data-x' : j,
+								'data-y' : 'user'
+							}).appendTo($line);
+
+							$output.text(j + 1, 'center');
+							if (j == 0) {
+								$output.addClass('enable').on('click', onClickSeat);
+							} else {
+								$output.addClass('enable');
+							}
+
+						}
+						// add document
+						$line.appendTo('body');
+
+						var $linebreak = $('<div></div>');
+						$linebreak
+								.text('-------------------------------------------------------------------------------------------------------------');
+						$linebreak.appendTo('body');
+
+						var $line = $('<div></div>').addClass('line');
+						for (var j = 0; j < x.length; j++) {
+
+							var $output = $("<div></div>", {
+								'class' : 'seat',
+								'data-x' : j,
+								'data-y' : 'computer'
+							}).appendTo($line);
+
+							$output.text(j + 1, 'center');
+
+							if (j == 0) {
+								$output.addClass('enable').on('click', onClickSeat);
+							} else {
+								$output.addClass('enable');
+							}
+						}
+						// add document
+						$line.appendTo('body');
+					});
+</script>
+
+</html>

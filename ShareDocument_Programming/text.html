@@ -4,19 +4,13 @@
 <head>
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-<script src="http://192.168.1.1:30000/socket.io/socket.io.js"></script>
+<script src="http://118.223.43.81:30000/socket.io/socket.io.js"></script>
 
 <script>
 //socket event connction
-var socket = io.connect();
-var x = true;
+var socket = io.connect("http://118.223.43.81:30000");
 // .on makes event connection to app.js file's event
 socket.on('share', function (data) {
-
-	if(x){
-		
-		x = false;
-	}
     
     //$("#cont").text(data.data);
 	$("#cont").val(data.data);
@@ -24,10 +18,18 @@ socket.on('share', function (data) {
 
 function share(x){
 	//alert(x.value);
-	socket.emit('join', $("#ident").val() );
-	socket.emit('share', {
-        data : x.value
-    });
+	var keyValue = event.keyCode;
+	//alert(keyValue);
+	if(keyValue == 32 || keyValue == 13){
+		socket.emit('join', $("#ident").val() );
+		socket.emit('share', {
+	        data : x.value,
+	        key : keyValue
+	    });
+	}else{
+		console.log('nothing');
+	}
+	
 }
 
 </script>
@@ -41,7 +43,7 @@ function share(x){
 <textarea id="cont" onkeyup="share(this)" rows="20" cols="50">
 This data will be stored at MongoDB in future...
 </textarea>
-
+<input type="button" onclick="send()" value="button"/>
 </body>
 
 </html>

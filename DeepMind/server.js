@@ -7,7 +7,7 @@ var express = require('express');
 var http = require('http');
 var fs = require('fs');
 
-var db_config = require('./db_connection.js')
+//var db_config = require('./db_connection.js')
 
 var app = express();
 
@@ -20,18 +20,18 @@ var run = http.createServer(app);
 
 run.listen(30000, function(error){	
 	if(!error){
-		db_config.get_open();
+		//db_config.get_open();
 	}
 	console.log('Express server listening on port 30000');
 });
 
-var db = db_config.get_db('node');
+//var db = db_config.get_db('node');
 
 var seats = [];
 
 app.get('/', function (request, response, next) {
-    fs.readFile('./text.html', function (error, data) {
-        response.sendfile('text.html');
+    fs.readFile('./baskin.html', function (error, data) {
+        response.sendfile('baskin.html');
     });
 });
 
@@ -52,19 +52,7 @@ app.post('/data', function(req, res){
 //Running socket server
 var io = socketio.listen(run);
 io.sockets.on('connection', function (socket) {
-	
-	socket.on('join', function(data){
-		socket.join(data);
-		socket.name = data;
-		console.log(socket.name);
-	});
-	
-    socket.on('share', function (data) {
-    	
-    	console.log(data.key);
-    	
-        io.sockets.emit('share', data);
-        //io.sockets.in(socket.name).emit('share', data);
-    	//socket.broadcast.emit('c_share', data);
+    socket.on('reserve', function (data) {
+        io.sockets.emit('reserve', data);
     });
 });
