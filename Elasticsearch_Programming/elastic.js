@@ -40,22 +40,49 @@ app.use(express.static(__dirname + '/public'));
 	}
 });*/
 
-/*
-client.index({
-	index: 'sample',
-	type: 'document',
-	id: '1',
+//client.indices.delete({index: 'samples'});
+
+/*fs.readFile('hotel.json', 'utf8', function (err, data) {
+	var x = JSON.parse(data);
+	//console.log(x);
+	for(var i = 0; i < x.length; i++){
+		client.index({
+			index:'hotels',
+			type:'hotel',
+			body:{
+				name:x[i].name,
+				stars:x[i].stars,
+				rooms:x[i].rooms,
+				location:x[i].location,
+				city:x[i].city,
+				address:x[i].address,
+				price:x[i].price,
+				internet:x[i].internet,
+				service:x[i].service,
+				checkin:x[i].checkin
+			}
+		}, function(err, res){
+			if(err) return;
+		});
+	}
+});*/
+
+
+/*client.index({
+	index: 'elks',
+	type: 'elk',
+	//id: '1',
 	body: {
-		name: 'Reliability2', 
-		text: 'Reliability2 is improved if multiple redundant sites are used, which makes well-designed cloud computing suitable for business continuity.'
+		word:'banana',
+		mean:'바나나'
 	}
 }, function (error, response) {
 	console.log(response);
 });*/
 
 client.search({
-	index: 'books',
-	type: 'book',
+	index: 'hotels',
+	type: 'hotel',
 	body: {
 		/*query: {
 			terms:{ // term
@@ -103,13 +130,104 @@ client.search({
 					type:'phrase'
 				}
 			}
-		}*/
+		}
 		
 		query:{
 			multi_match:{
 				fields:['title', 'plot'],
 				query:'prince hamlet',
 				operator:'and'
+			}
+		}
+		
+		query:{
+			bool:{
+				must:{
+					term:{
+						'title' : 'the'
+					}					
+				},
+				must_not:{
+					terms:{
+						'plot' : ['prince', 'fogg']
+					}
+				},
+				should:[
+				        {term:{title:'time'}},
+				        {term:{title:'world'}}
+				        ]
+			}
+		}
+		
+		query:{
+			prefix:{
+				'gender':'fe'
+			}
+		}
+		
+		query:{
+			fuzzy:{
+				pages:{
+					value:100,
+					fuzziness:20 // (+/- 20)
+				}
+			}
+		}
+		
+		filter:{
+			not:{
+				range:{
+					pages:{
+						gte:50,
+						lte:150
+					}
+				}
+			}
+		}
+
+		filter:{
+			and:[
+			     {
+			    	 range:{
+			    		 pages:{
+			    			 gte:50,
+			    			 lt:150
+			    		 }
+			    	 }
+			     },
+			     {
+			    	 term:{
+			    		 title:'the'
+			    	 }
+			     }
+			     ]
+		}
+		
+		filter:{
+			bool:{
+				must:{
+					term:{
+						title:'the'
+					}
+				},
+				must_not:{
+					term:{
+						plot:'prince'
+					}
+				},
+				should:{
+					terms:{
+						title:['time', 'world']
+					}
+				}
+			}
+		}*/
+		
+		aggs:{
+			price_min:{
+				min:{
+					field:'price'
+				}
 			}
 		}
 		
