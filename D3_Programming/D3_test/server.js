@@ -30,8 +30,8 @@ var db = db_config.get_db('node');
 var seats = [];
 
 app.get('/', function (request, response, next) {
-    fs.readFile('./baskin.html', function (error, data) {
-        response.sendfile('baskin.html');
+    fs.readFile('./test.html', function (error, data) {
+        response.sendfile('test.html');
     });
 });
 

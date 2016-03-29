@@ -17,6 +17,17 @@
     "node-inspector":"*",
     "body-parser":"*",
     "method-override":"*",
-    "elasticsearch":"*"
+    "elasticsearch":"*",
+    "fbgraph":"*",
+    "passport":"*",
+	"cookie-parser": "*",
+	"express-session": "*",
+	"passport-facebook": "*",
+	"passport-local": "*",
+	"krawler":"*",
+	"fb":"*",
+	"step": "*",
+	"fbgraphapi":"*",
+	"twitter":"*"
   }
 }

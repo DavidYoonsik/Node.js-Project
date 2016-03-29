@@ -1,0 +1,196 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chatting</title>
+<script type="text/javascript" src="js/jquery-1.9.2.min.js"></script>
+<script type="text/javascript" src="http://localhost:30000/socket.io/socket.io.js"></script>
+<link rel="stylesheet" href="/stylesheets/style.css">
+<script>
+
+var roomlist = [];
+var serverUrl = 'http://localhost:30000';
+var socket = io.connect(serverUrl);
+var clientid;
+var nickname;
+
+$(document).ready(function(){	
+	
+	
+	//방만들기 
+	$("#room_make").click(function(){
+		var data = {"roomname":$("#roomname").val(),"nickname":$("#nickname").val()};
+		socket.emit('roommake', data);
+		$("#roomname").val("");
+		nickname = $("#nickname").val();
+	});
+	
+	//
+	$("#chatroom").hide();
+	
+	//로딩시에 방목록 얻어오기 요청
+	getRoomList();
+	
+	//방목록 얻어오기 요청
+	socket.on('roomlist',function(data){
+		
+		//개설된 방목록 
+		roomlist = [];
+		
+		clientid = data.clientid;
+		data = data.roomdata;
+		
+		for(var key in data){
+			if(key.indexOf("/") > -1){
+				
+				var myroom = false;
+				
+				for(var i = 0 ; i < data[key].length ; i++){
+					if(data[key][i] == io.sockets[serverUrl].sessionid)
+						myroom = true;
+				}
+				
+				roomlist.push({"name":key.split("/").join(""),count:data[key].length,myroom:myroom});
+			}
+		}
+
+		viewRoomlist(roomlist);
+	});
+	
+	
+	//Room 변경 
+	socket.on('room_research',function(data){
+		getRoomList();
+	});
+	
+	//입장시 화면 처리
+	socket.on('intro',function(data){
+		$("#chatroom textarea").val($("#chatroom textarea").val() + '(' + data + ') 님이 입장하셧습니다.\n');
+		$('#chatroom textarea').scrollTop($('#chatroom textarea')[0].scrollHeight);
+	});
+
+	//msg 처리
+	socket.on('message_send',function(data){
+		$("#chatroom textarea").val($("#chatroom textarea").val() + '[' + data.from + '] : ' + data.msg + '\n');
+		$('#chatroom textarea').scrollTop($('#chatroom textarea')[0].scrollHeight);
+		console.log(data);
+		
+	});
+	
+	//퇴장 화면 처리
+	socket.on('message_send_disconnect',function(data){
+		
+		console.log("DICONNECT");
+		
+		$("#chatroom textarea").val($("#chatroom textarea").val() + '(' + data.from + ') 님이 퇴장 하셧습니다.\n');
+		$('#chatroom textarea').scrollTop($('#chatroom textarea')[0].scrollHeight);
+	});
+
+	
+	//입력창에서 엔터시에 데이터 전송 
+	$("#chatroom div input").keypress(function(e){
+		if(e.keyCode == 13){
+			socket.emit('message', {"msg":$("#chatroom div input").val()});
+			$("#chatroom div input").val("");
+		}
+	});
+	
+});
+
+//REST 요청으로 방목록 받아오기 
+function getRoomList(){
+	
+	$.ajax({
+		type: "get",
+		dataType: "json",
+		url: "/roomlist",
+		success: function(data){
+			console.log(data);
+			roomlist = [];
+			
+			for(var key in data){
+				if(key.indexOf("/") > -1){
+					var myroom = false;
+					for(var i = 0 ; i < data[key].length ; i++){
+						if(data[key][i] == io.sockets[serverUrl].sessionid)
+							myroom = true;
+					}
+					
+					roomlist.push({"name":key.split("/").join(""),count:data[key].length,myroom:myroom});
+				}
+			}
+			
+			viewRoomlist(roomlist);
+		},
+		error: function(res){
+			
+		}
+	});
+	
+}
+
+
+function viewRoomlist(data){
+	
+	//기존리스트 삭제
+	$("#roomlist li").remove();
+	$("#room").show();
+	
+	//방목록 표기 
+	for(var i = 0 ; i < data.length ; i++){
+		if(data[i].myroom){
+			$("#room").hide();
+			$("#roommake").hide();
+			$("#chatroom").show();
+			$("#chatroom legend").text("방이름 : " + data[i].name + " || 참여자수 : " + data[i].count + " || nickname:" + nickname);
+			
+		}else{
+			$("#roomlist").append("<li '>방이름 :" + data[i].name + ", 참여자수 :" + data[i].count + 
+					", 닉네임 : <input type = 'text'> <input type = 'button' value = '입장하기' data-roomname='" + data[i].name + "' > </li>");
+		}
+	}
+	
+	if(data.length < 1){
+		$("#roomlist").append("<li>생성된 방이 없습니다.</li>");
+	}else{
+		//이벤트 핸들러 설정
+		$("#roomlist li input[type=button]").click(function(){
+
+			var data = {"roomname":$(this).data("roomname"),"nickname":$("#roomlist li input[type=text]").val()};
+			socket.emit('roommake', data);
+			nickname = $("#roomlist li input[type=text]").val();
+			
+		});
+		
+	}
+	
+}
+
+</script>
+</head>
+
+<body>
+
+<h1>채팅</h1>
+
+<fieldset id = "roommake">
+	<legend>방만들기</legend>
+	방이름 : <input id = "roomname" type="text" value ><br>
+	닉네임 : <input id = "nickname" type="text" value ><br>
+	<input id = "room_make" type = "button" value = "방만들기">
+</fieldset>
+
+<fieldset id = "room" >
+	<legend>개설된 방목록 </legend>
+	<div id = "roomlist"></div>
+</fieldset>
+
+<fieldset id = "chatroom" >
+	<legend> </legend>
+	<textarea cols = 50 rows = 20 readonly></textarea>
+	<div>
+		<input type = "text" size = "50">
+	</div>
+</fieldset>
+
+</body>
+</html>

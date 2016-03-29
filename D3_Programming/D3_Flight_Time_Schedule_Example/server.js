@@ -7,7 +7,7 @@ var express = require('express');
 var http = require('http');
 var fs = require('fs');
 
-var db_config = require('./db_connection.js')
+//var db_config = require('./db_connection.js')
 
 var app = express();
 
@@ -20,16 +20,16 @@ var run = http.createServer(app);
 
 run.listen(30001, function(error){	
 	if(!error){
-		db_config.get_open();
+		//db_config.get_open();
 	}
 	console.log('Express server listening on port 30001');
 });
 
-var db = db_config.get_db('flight');
+//var db = db_config.get_db('flight');
 
 app.get('/', function (request, response, next) {
-    fs.readFile('./index.html', function (error, data) {
-        response.sendfile('index.html');
+    fs.readFile('./index2.html', function (error, data) {
+        response.sendfile('index2.html');
     });
 });
 

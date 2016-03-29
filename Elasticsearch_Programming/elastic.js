@@ -221,7 +221,7 @@ client.search({
 					}
 				}
 			}
-		}*/
+		}
 		
 		aggs:{
 			price_min:{
@@ -229,13 +229,51 @@ client.search({
 					field:'price'
 				}
 			}
+		}*/
+		
+		aggs:{
+			price_min:{
+				min:{
+					field:'price'
+				}
+			},
+			price_max:{
+				max:{
+					field:'price'
+				}
+			},
+			price_sum:{
+				sum:{
+					field:'price'
+				}
+			},
+			price_avg:{
+				avg:{
+					field:'price'
+				}
+			},
+			price_count:{
+				value_count:{
+					field:'price'
+				}
+			},
+			price_stats:{
+				stats:{
+					field:'price'
+				}
+			},
+			price_extended_stat:{
+				extended_stats:{
+					field:'price'
+				}
+			}
 		}
 		
 	}
 }).then(function (resp) {
-	console.log(resp);
+	console.log(resp.aggregations);
 	for(var i = 0; i < resp.hits.hits.length; i++){
-		console.log(resp.hits.hits[i]._source);
+		//console.log(resp.hits.hits[i]._source);
 	}
 
 }, function (err) {

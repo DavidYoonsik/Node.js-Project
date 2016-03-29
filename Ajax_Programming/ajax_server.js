@@ -32,6 +32,35 @@ server.listen(30000, function(){
 // File upload
 app.get('/', function (request, response) {
     fs.readFile('ajax_test.html', function (error, data) {
+    	
+    	var logsPath = __dirname + '/logstash/';
+    	filePath = logsPath + 'log'; //+ Date.now();
+    	
+    	var y = parseInt((Math.random()*10)) + 1;
+   
+    	//console.log(logsPath);
+    	
+    	//var x = '{"name":"david", "position":"king", "number":' + y + '}';
+    	//var obj = JSON.parse(x);
+    	//console.log(obj.name);
+    	fs.exists(logsPath, function(exists) {
+    		if(exists){
+    			fs.appendFile(filePath+'.txt', '\n'+y, 'utf-8', function(err){
+    				if(err){
+    					throw err;
+    				}
+    			});
+    		}else{
+    			fs.mkdir(logsPath, function(err){
+    				fs.appendFile(filePath+'.txt', 'log information test!', 'utf-8', function(err){
+        				if(err){
+        					throw err;
+        				}
+        			});
+    			});
+    		}
+    	});
+    	
         response.send(data.toString());
     });
 });
@@ -52,7 +81,7 @@ app.post('/', function (request, response) {
         	var outputPath = __dirname + '/multipart/';
         	var filePath = outputPath + Date.now() + '_' + name;
         	
-        	//console.log(outputPath);
+        	console.log(outputPath);
         	
         	fs.exists(outputPath, function(exists) {
         		if(exists){
@@ -67,7 +96,6 @@ app.post('/', function (request, response) {
         			});
         		}
         	});
-
             
         } else {
 
@@ -117,9 +145,16 @@ app.post('/ajax_cookie', function(req, res){
 		}
 		//console.log(i + ' : ' + x[i]);
 	}
-	client.query('select * from products', function(error, result){
+	/*client.query('select * from products', function(error, result){
 		res.send(result);
-	});
+	});*/
+	var x = [{
+		id : "No 1",
+		name : "Beatiful",
+		modelnumber : "123456"
+	}];
+	
+	res.send(x);
 });
 
 app.get('/mysql_test', function(req, res){

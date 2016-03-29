@@ -64,11 +64,11 @@ function updateData() {
 	});
 	
 	svg.select(".y.axis")
-	.duration(500)
+	.duration(5000)
 	.call(yAxis);
 	
 	svg.select(".grid")
-	.duration(500)
+	.duration(5000)
 	.call(make_x_axis()
 			.tickSize(-height, 0, 0)
 			.tickFormat("")
@@ -137,6 +137,7 @@ svg.append("path")
 .datum(data)
 .attr("class", "area")
 .attr("d", valueArea);
+
 svg.append("path")
 .attr("class", "line")
 .attr("d", valueLine(data));
