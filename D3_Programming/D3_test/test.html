@@ -56,6 +56,15 @@ path {
 	<script src="sub_test.js" charset="utf-8"></script>
 
 	<script>
+	
+		var xScale = d3.time.scale().Range([0, 800]);
+		var yScale = d3.scale.linear().Range([400, 0]);
+		
+		
+	
+	
+	
+	
 		$.post("/data", function(data) {
 			//alert(data); for test;
 			get_data(data);

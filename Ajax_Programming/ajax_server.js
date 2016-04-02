@@ -36,9 +36,10 @@ app.get('/', function (request, response) {
     	var logsPath = __dirname + '/logstash/';
     	filePath = logsPath + 'log'; //+ Date.now();
     	
+    	//var colour = ['RED', 'YELLOW', 'WHITE', 'BLACK', 'BROWN', 'PURPLE', 'GREY', 'ORANGE', 'SKY', 'BLUE'];
     	var y = parseInt((Math.random()*10)) + 1;
-   
-    	//console.log(logsPath);
+    	//var x = colour[y-1];
+    	//console.log(y + ',' + x);
     	
     	//var x = '{"name":"david", "position":"king", "number":' + y + '}';
     	//var obj = JSON.parse(x);
