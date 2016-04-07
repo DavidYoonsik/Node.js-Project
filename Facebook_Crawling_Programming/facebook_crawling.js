@@ -1,27 +1,100 @@
 /**
  * http://usejsdoc.org/
+ * 
+ * Use FB module to load data from facebook site
+ * 
+ * SetInterval() to crawl data periodically
+ * 
+ * 
  */
 
-var access_token = 'CAAYcyJyyVdYBALecVt8bwyZC2FjEAphNDysxGU2xH6q6fufYbvCJHwKf1b6ONo3hCItXh7ZBiwG05SOczLm9ERsSFSFap8euc7MV3l9jpEZBlXJuEONrLFsqIGIbJzKFdFBgcay8z8eIVZCO7T7Leyn6tTz9QGTxQa3LPjLmyW62fmgXD7ccXVCYw4BLKWq5PqUMn4m1TgZDZD';
+var access_token = 'CAAYcyJyyVdYBAHqs5Qs50piDxaWFvDRRmWf6vu94mUMK44qABDC7iRUqVOrdUAlYWQkVSTNzvwUZB2spXJdhdwQa3nz2ZABZCSeG7zDOIi8PDdHZBSTgwhdSUDvdLlvurQZCRJuNPmnbQyYvx5RtgQZBlNVP77F5jvO8GXohcayFJOxoOERqCWFDZCZAMgSt68ENbAL96twRTy5HW07qp7IQ';
 var myId = '734230706698657';//'734230706698657';//'1400166580254734';
+
+var socketio = require('socket.io');
+var express = require('express');
+var http = require('http');
 var FB = require('fb');
 var url = require('url');
 var fs = require('fs');
+var es = require('elasticsearch');
+var jsonfile = require('jsonfile');
+var client = null;
 
-FB.setAccessToken(access_token);
+var app = express();
+
+app.use(express.bodyParser());
+app.use(app.router);
+app.use(express.logger());
+app.use(express.static(__dirname + '/public'));
+
+var run = http.createServer(app);
+
+run.listen(30000, function(error){	
+
+	client = new es.Client({
+		host:'127.0.0.1:9200',
+		log:'trace'
+	});
+	console.log('Express server listening on port 30000');
+
+
+});
+
+app.get('/', function (request, response) {
+	fs.readFile('./getAccessToken.html', function (error, data) {
+		response.sendfile('getAccessToken.html');
+	});
+});
+
+app.post('/data', function (request, response) {	
+
+	access_token = request.body.access;
+
+	FB.setAccessToken(access_token);
+
+	feedLink = '1400166580254734/posts';	//'usitnewsinkorea/posts'; // me/feed
+
+	getWallFeeds(feedLink, {}, response);
+
+});
 
 var glo = '';
 
-function getWallFeeds(feedLink, args) {
-
-	FB.api(feedLink, 'get', args, function (res) {
-		if (!res || res.error) {
+function getAccessToken(){
+	FB.api('oauth/access_token', {
+		client_id: '1720497808233942',
+		client_secret: 'caf62c75decc61597389f060a95e3b70',
+		redirect_uri: 'http://175.214.95.102:30000/',
+		grant_type: '81d1048474487c688e94955f2e6924f3' // 81d1048474487c688e94955f2e6924f3
+	}, function (res) {
+		if(!res || res.error) {
 			console.log(!res ? 'error occurred' : res.error);
 			return;
 		}
 
-		//console.log(res);
+		access_token = res.access_token;
+		alert(access_token);
+		FB.setAccessToken(access_token);
+	});
+}
+
+function getWallFeeds(feedLink, args, response) {
+
+
+
+	FB.api(feedLink, 'get', args, function (res) {
+		if (!res || res.error) {
+			console.log(!res ? 'error occurred' : res.error);
+
+			getAccessToken();
+
+		}
+
+		//console.log(res.data);
 		processMessage(res.data);
+
+		//response.send(res.data);
 
 		var nextLinkParts = url.parse(res.paging.next, true);
 
@@ -31,30 +104,45 @@ function getWallFeeds(feedLink, args) {
 				limit: nextLinkParts.query.limit,
 				until: nextLinkParts.query.until,
 				access_token: nextLinkParts.query.access_token
-		}
+		};
 
 
-		//getWallFeeds(feedLink, {});
+		getWallFeeds(feedLink, args, response);
 	});
 }
 
 
 function processMessage(data) {
+
+	var arr = [];
+
 	for (i in data) {
 
-		/*console.log(data[0].from.name); // name, category, id
-		console.log(data[0].message);
-		console.log(data[0].created_time);
+		var json = {
+				message:data[i].message,
+				story:data[i].story
+		};
 
-		var x = data[i].from.name;
-		x += '\n\n' + data[i].message;
-		x += '\n\n' + data[i].created_time + '\n\n';*/
+		arr.push(json);
 
-		fs.appendFile('log2.txt', data[i].message + ', ' + data[i].story, 'utf-8', function(err){
-			if(err){
-				throw err;
+		client.index({
+			index:'facebook',
+			type:'fb',
+			id:data[i].id,
+			body:{
+				message:data[i].message,
+				created_time:data[i].created_time
 			}
+		}, function(err, res){
+			if(err){
+				console.log(err);
+			}else{
+				//console.log(movie);
+				//console.log('success');
+			};
 		});
+
+		//console.log('for : ' + i);
 
 		/*if (data[i].from.id!=myId) {
 			name = data[i].from.name;
@@ -88,8 +176,18 @@ function processMessage(data) {
 	}*/
 
 	}
+
+	//console.log('end for');
+
+	/*jsonfile.writeFile("log2.txt", arr, function (err) {
+		console.error(err);
+	});*/
+
+	/*fs.appendFile('log2.json', arr, 'utf-8', function(err){ // data[i].message + ', ' + data[i].story
+		if(err){
+			throw err;
+		}else{
+
+		}
+	});*/
 }
-
-feedLink = '1400166580254734/posts';//'usitnewsinkorea/posts'; // me/feed
-
-getWallFeeds(feedLink, {});

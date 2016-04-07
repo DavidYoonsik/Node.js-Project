@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html style="height: 316px;">
 <head>
 <meta charset="EUC-KR">
 <title>Insert title here</title>
 </head>
 <body>
-	<input id="AccessToken" type="text" value="" />
-	<div id="fb-root"></div>
+	<input id="AccessToken" type="text"
+		value="accesstoken will be present here!" style="width: 249px;" /><br>
+	<br><br>
+
+	<textarea rows="50" cols="100" id="ta" style="width: 879px; height: 187px; "></textarea><br><br>
+
 	<script src="https://connect.facebook.net/en_US/all.js"
 		type="text/javascript"></script>
 	<script
@@ -22,17 +26,31 @@
 			});
 
 			function facebooklogin() {
-				//페이스북 로그인 버튼을 눌렀을 때의 루틴.  
+				//占쏙옙占싱쏙옙占쏙옙 占싸깍옙占쏙옙 占쏙옙튼占쏙옙 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙 占쏙옙틴.  
 				FB.login(function(response) {
 					var fbname;
 					var accessToken = response.authResponse.accessToken;
 					//alert(accessToken);
 					$('#AccessToken').val(accessToken);
-				}, {
-					scope : 'user_likes, user_posts, user_location, user_friends, user_about_me, public_profile, user_relationships, pages_show_list, pages_manage_cta, pages_manage_instant_articles, publish_pages, manage_pages, user_relationship_details, user_managed_groups, read_insights, read_custom_friendlists'
+
+					$.post("/data", {
+						access : accessToken
+					}, function(data, status) {
+						var text = '';
+						for(i in data){
+							text += data[i].message;
+						}
+						$("#ta").val(text);
+						
+					});
+
 				});
+
+				/* , {
+					scope : 'user_likes, user_posts, user_location, user_friends, user_about_me, public_profile, user_relationships, pages_show_list, pages_manage_cta, pages_manage_instant_articles, publish_pages, manage_pages, user_relationship_details, user_managed_groups, read_insights, read_custom_friendlists'
+				} */
 			}
-			
+
 			facebooklogin();
 
 			/* FB.getLoginStatus(function(response) {

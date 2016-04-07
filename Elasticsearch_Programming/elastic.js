@@ -2,26 +2,24 @@
  * http://usejsdoc.org/
  */
 var fs = require('fs');
-var ejs = require('ejs');
-var http = require('http');
-var express = require('express');
 var es = require('elasticsearch');
+var jsonfile = require('jsonfile');
 
 var client = new es.Client({
 	host:'127.0.0.1:9200'
 		//log:'trace'
 });
 
-//웹 서버를 생성합니다.
-var app = express();
-var server = http.createServer(app);
+//�쎒 �꽌踰꾨�� �깮�꽦�빀�땲�떎.
+//var app = express();
+//var server = http.createServer(app);
 
-//웹 서버를 설정합니다.
-app.use(app.router);
-app.use(express.logger());
-app.use(express.static(__dirname + '/public'));
+//�쎒 �꽌踰꾨�� �꽕�젙�빀�땲�떎.
+//app.use(app.router);
+//app.use(express.logger());
+//app.use(express.static(__dirname + '/public'));
 
-//웹 서버를 실행합니다.
+//�쎒 �꽌踰꾨�� �떎�뻾�빀�땲�떎.
 /*server.listen(30000, function () {
     console.log('Server Running at http://127.0.0.1:30000');
 });
@@ -74,23 +72,52 @@ app.use(express.static(__dirname + '/public'));
 	//id: '1',
 	body: {
 		word:'banana',
-		mean:'바나나'
+		mean:'諛붾굹�굹'
 	}
 }, function (error, response) {
 	console.log(response);
 });*/
 
+/*client.count({
+	index: 'movies'
+}, function (error, response) {
+	console.log(response.count);
+});
+
 client.search({
-	index: 'hotels',
-	type: 'hotel',
+	index:"movies",
+	type:"movie"
+}).then(function (resp) {
+	for(var i = 0; i < resp.hits.hits.length; i++){
+		console.log(resp.hits.hits[i]._source);
+	}
+	console.log(resp);
+}, function (err) {
+	console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+});*/
+
+client.search({
+	index: 'movies',
+	type: 'movie',
 	body: {
-		/*query: {
+		
+		query: {
+			term:{ // term
+				code:'m04msh'
+				//title:'Prince' // Case-sensitive
+				//title:['prince', 'king']
+				//original : ["https", "jpg"] // 
+				//minimum_number_should_match : 2
+			}
+		}
+		
+/*		query: {
 			terms:{ // term
 				//title:'prince'
 				//title:'Prince' // Case-sensitive
 				//title:['prince', 'king']
-				title : ["the", "and", "of"],
-				minimum_number_should_match : 2
+				original : ["https", "jpg"] // 
+				//minimum_number_should_match : 2
 			}
 		}
 		filter: {
@@ -111,7 +138,7 @@ client.search({
 				title: 'The And'	// Tokenize 'the' and 'and' then query.
 			}
 		}
-		
+
 		query:{
 			match:{
 				title:{
@@ -120,7 +147,7 @@ client.search({
 				}
 			}
 		}
-		
+
 		query:{
 			match:{
 				title:{
@@ -131,7 +158,7 @@ client.search({
 				}
 			}
 		}
-		
+
 		query:{
 			multi_match:{
 				fields:['title', 'plot'],
@@ -139,7 +166,7 @@ client.search({
 				operator:'and'
 			}
 		}
-		
+
 		query:{
 			bool:{
 				must:{
@@ -158,13 +185,13 @@ client.search({
 				        ]
 			}
 		}
-		
+
 		query:{
 			prefix:{
 				'gender':'fe'
 			}
 		}
-		
+
 		query:{
 			fuzzy:{
 				pages:{
@@ -173,7 +200,7 @@ client.search({
 				}
 			}
 		}
-		
+
 		filter:{
 			not:{
 				range:{
@@ -202,7 +229,7 @@ client.search({
 			     }
 			     ]
 		}
-		
+
 		filter:{
 			bool:{
 				must:{
@@ -222,15 +249,15 @@ client.search({
 				}
 			}
 		}
-		
+
 		aggs:{
 			price_min:{
 				min:{
 					field:'price'
 				}
 			}
-		}*/
-		
+		}
+
 		aggs:{
 			price_min:{
 				min:{
@@ -268,16 +295,40 @@ client.search({
 				}
 			}
 		}
+ 		*/
+		
+		
+		/*"aggs":{
+			"duplicateCount":{
+				terms:{
+					"field":"code",
+					"min_doc_count":2
+				},
+				aggs:{
+					"duplicateDoc":{
+						"top_hits":{
+							
+						}
+					}
+				}
+			}
+		}*/
 		
 	}
 }).then(function (resp) {
-	console.log(resp.aggregations);
-	for(var i = 0; i < resp.hits.hits.length; i++){
-		//console.log(resp.hits.hits[i]._source);
-	}
+	console.log(resp);
+	/*for(var i = 0; i < resp.aggregations.duplicateCount.buckets.length; i++){
+		console.log(resp.aggregations.duplicateCount.buckets[i]);
+	}*/
+	
+	//console.log(resp); //  resp.hits.hits.length
+	/*for(var i = 0; i < resp.hits.hits.length; i++){
+		console.log(resp.hits.hits[i]._source);
+	}*/
 
 }, function (err) {
 	console.log(err.message);
+	//console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 });
 
 /*var _index = "company";
