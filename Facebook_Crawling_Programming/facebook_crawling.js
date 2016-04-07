@@ -64,9 +64,9 @@ var glo = '';
 function getAccessToken(){
 	FB.api('oauth/access_token', {
 		client_id: '1720497808233942',
-		client_secret: 'caf62c75decc61597389f060a95e3b70',
-		redirect_uri: 'http://175.214.95.102:30000/',
-		grant_type: '81d1048474487c688e94955f2e6924f3' // 81d1048474487c688e94955f2e6924f3
+		client_secret: 'your secret',
+		redirect_uri: 'http://ip_address:30000/',
+		grant_type: 'user_token located in settings'
 	}, function (res) {
 		if(!res || res.error) {
 			console.log(!res ? 'error occurred' : res.error);
